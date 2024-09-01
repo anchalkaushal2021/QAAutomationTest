@@ -1,0 +1,39 @@
+Feature: GitHub API Automation Tests Scenarios
+  
+Background:  
+  * url 'https://api.github.com'  
+  * headers { Accept: 'application/vnd.github+json', Authorization: 'Bearer <YOUR-TOKEN>', 'X-GitHub-Api-Version': '2022-11-28' }  
+  
+Scenario: Get user information  
+  Given path 'user'  
+  When method GET  
+  Then status 200  
+  
+Scenario: No Token Provided  
+  Given path 'user'  
+  And headers { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }  
+  When method GET  
+  Then status 401  
+  
+Scenario: Invalid Token Provided  
+  Given path 'user'  
+  And headers { Accept: 'application/vnd.github+json', Authorization: 'Bearer InvalidToken', 'X-GitHub-Api-Version': '2022-11-28' }  
+  When method GET  
+  Then status 401  
+  
+Scenario: Forbidden Access (Token Without Necessary Permissions)  
+  Given path 'user'  
+  And headers { Accept: 'application/vnd.github+json', Authorization: 'Bearer <YOUR-INVALID-TOKEN>', 'X-GitHub-Api-Version': '2022-11-28' }  # Replace <YOUR-INVALID-TOKEN> with a token without necessary permissions  
+  When method GET  
+  Then status 403  
+
+Scenario: Get User With Valid Token  
+  Given path 'user'  
+  When method GET  
+  Then status 200  
+  
+Scenario: Update User Bio With Valid Token  
+  Given path 'user'  
+  And request { bio: 'Your new bio content here.' }  
+  When method PATCH  
+  Then status 200  
